@@ -37,9 +37,13 @@ def users():
     users = User.query.all()
     return render_template("user-list.html", users=users)
 
-@app.route('/users/<int:user-id>')
-def showUser():
-    return
+@app.route('/login-form')
+def show_login_form():
+    return render_template("sign-in.html")
+
+# @app.route('/users/<int:user-id>')
+# def show_user():
+#     return
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
