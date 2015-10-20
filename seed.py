@@ -1,7 +1,7 @@
 """Utility file to seed ratings database from MovieLens data in seed_data/"""
 
 
-from model import User
+from model import User, Movie, Rating
 # from model import Rating
 # from model import Movie
 
@@ -49,16 +49,24 @@ def load_movies():
         movie_entry = row.split("|")
         movie_id = movie_entry[0]
         movie_title = movie_entry[1] #TODO: need a way to remove YEAR 
-        
+        print movie_title
         # remove year frome title formated as "Title Name (YYYY)"
         # look up index of (, take title from [0:index-1]
-        paren_index = movie_title.index('(')
-        # slice off the year and proceeding single space
-        movie_title = movie_title[:(paren_index-1)]
-        
+        paren_index = movie_title.find('(')
+        if paren_index != -1:
+            # slice off the year and proceeding single space
+            movie_title = movie_title[:(paren_index-1)]
+            
         release_date = movie_entry[2]
+        
+        # else: # no year in title
+        #     release_date = None
+        
         #parse string into datetime object
-        rel_date_obj = datetime.strptime(release_date, '%d-%b-%Y')
+        if release_date:
+            rel_date_obj = datetime.strptime(release_date, '%d-%b-%Y')
+        else:
+            rel_date_obj = None
 
         imdb_url = movie_entry[3]
 
@@ -92,7 +100,7 @@ def load_ratings():
         db.session.add(rating)
 
     db.session.commit()
-    
+
 
 if __name__ == "__main__":
     connect_to_db(app)
