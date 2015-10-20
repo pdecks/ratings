@@ -57,6 +57,8 @@ def process_login():
     else:
         # display alert for incorrect login information
         flash("Incorrect login information. Please try again.")
+        # good place to use AJAX in the future!
+        return redirect('/login-form')
         
     # redirect to homepage
     return redirect('/')
