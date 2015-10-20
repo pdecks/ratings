@@ -21,8 +21,10 @@ def load_users():
     # Read u.user file and insert data
     for row in open("seed_data/u.user"):
         row = row.rstrip()
+        # not all of this data is stored in database
         user_id, age, gender, occupation, zipcode = row.split("|")
 
+        # when do we add email and pw?
         user = User(user_id=user_id,
                     age=age,
                     zipcode=zipcode)
@@ -36,11 +38,61 @@ def load_users():
 
 def load_movies():
     """Load movies from u.item into database."""
+    from datetime import datetime
+
+    print "Movies"
+
+    Movie.query.delete()
+
+    for row in open("seed_data/u.item"):
+        row = row.rstrip()
+        movie_entry = row.split("|")
+        movie_id = movie_entry[0]
+        movie_title = movie_entry[1] #TODO: need a way to remove YEAR 
+        
+        # remove year frome title formated as "Title Name (YYYY)"
+        # look up index of (, take title from [0:index-1]
+        paren_index = movie_title.index('(')
+        # slice off the year and proceeding single space
+        movie_title = movie_title[:(paren_index-1)]
+        
+        release_date = movie_entry[2]
+        #parse string into datetime object
+        rel_date_obj = datetime.strptime(release_date, '%d-%b-%Y')
+
+        imdb_url = movie_entry[3]
+
+        movie = Movie(movie_id=movie_id,
+                      movie_title=movie_title, 
+                      release_date=rel_date_obj,
+                      imdb_url=imdb_url)
+
+        db.session.add(movie)
+
+    db.session.commit()
+
 
 
 def load_ratings():
     """Load ratings from u.data into database."""
 
+    print "Ratings"
+
+    Rating.query.delete()
+
+    for row in open("seed_data/u.data"):
+        row = row.rstrip()
+        # rating_entry = row.split('\t')
+        user_id, movie_id, score, epoch_time = row.split('\t')
+
+        rating = Rating(user_id=user_id,
+                        movie_id=movie_id,
+                        score=score)
+
+        db.session.add(rating)
+
+    db.session.commit()
+    
 
 if __name__ == "__main__":
     connect_to_db(app)
