@@ -41,6 +41,38 @@ def users():
 def show_login_form():
     return render_template("sign-in.html")
 
+@app.route('/login-process')
+def process_login():
+    username = request.args.get('username')
+    password = request.args.get('password')
+    # query for username in database
+    user = User.query.filter(User.email == username).one()
+    print "this is user: %s" % user
+    # log in user if password matches user pw
+    if user.password == password:
+        # add user id to session
+        session['user_id'] = user.user_id
+        # create flash message 'logged in'
+        flash("Login successful.")
+    else:
+        # display alert for incorrect login information
+        flash("Incorrect login information. Please try again.")
+        
+    # redirect to homepage
+    return redirect('/')
+
+@app.route('/logout')
+def process_logout():
+    # remove user id from the session
+    del session['user_id']
+
+    # create flash message "logged out"
+    flash("Successfully logged out.")
+    
+    # redirect to homepage
+    return redirect('/')
+
+
 # @app.route('/users/<int:user-id>')
 # def show_user():
 #     return
