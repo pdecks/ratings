@@ -61,7 +61,38 @@ def process_login():
         return redirect('/login-form')
         
     # redirect to homepage
-    return redirect('/')
+    return redirect('/users/<user_id>')
+
+@app.route('/users/<user_id>')
+def show_user_page(user_id):
+    # user_id = session['user_id']
+    user_id = 944 #pdecks@me.com
+    QUERY = """
+            SELECT Movies.movie_title, Ratings.score 
+            FROM Ratings 
+            JOIN Movies ON Movies.movie_id = Ratings.movie_id 
+            JOIN Users ON Users.user_id = Ratings.user_id 
+            WHERE Users.user_id = :user_id;
+            """
+    cursor = db.session.execute(QUERY, {'user_id': user_id})
+    movies = cursor.fetchall()
+    user = User.query.filter(User.user_id == user_id).one()
+    # query database to return a LIST of MOVIES user rated and score for each rating
+    # user_ratings = Rating.query.filter(User.user_id == 944).all()
+    # print "This is user_ratings:"
+    # print user_ratings
+    # for rating in user_ratings:
+    #     print rating
+    # user_movies_rated = user_ratings.movie
+    # movies = user_movies_rated.all()
+    # for movie in movies:
+    #     print movie.movie_title
+    # movies=[{'movie_title': 'Batman', 'score': 5}]
+    
+    return render_template('user.html', user=user, movies=movies)
+
+
+
 
 @app.route('/logout')
 def process_logout():
