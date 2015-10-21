@@ -28,7 +28,9 @@ def index():
 @app.route('/movies')
 def movies():
     """Movies page."""
-    return 
+
+    movies = Movie.query.order_by(Movie.movie_title).all()
+    return render_template("movies.html", movies=movies) 
 
 @app.route('/users')
 def users():
@@ -58,7 +60,7 @@ def process_login():
         # display alert for incorrect login information
         flash("Incorrect login information. Please try again.")
         # good place to use AJAX in the future!
-        return redirect('/login-form')
+        return redirect('/login-form')  
         
     # redirect to homepage
     return redirect('/users/<user_id>')
@@ -66,7 +68,7 @@ def process_login():
 @app.route('/users/<user_id>')
 def show_user_page(user_id):
     # user_id = session['user_id']
-    user_id = 944 #pdecks@me.com
+    # user_id = user_id #pdecks@me.com
     QUERY = """
             SELECT Movies.movie_title, Ratings.score 
             FROM Ratings 
