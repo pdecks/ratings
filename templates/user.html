@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h2>{{ user.email }}</h2>
+    <ul>
+        <li>Age: {{ user.age }}</li>
+        <li>Zipcode: {{ user.zipcode }}</li>
+    </ul>
+    <h2>Movies rated by {{ user.email }}</h2>
+    <ul>
+        <!-- update variable names after creating tuple -->
+        {% for movie in movies %} 
+            <li>{{movie.movie_title}} {{movie.score}}</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
