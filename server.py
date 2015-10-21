@@ -32,6 +32,28 @@ def movies():
     movies = Movie.query.order_by(Movie.movie_title).all()
     return render_template("movies.html", movies=movies) 
 
+
+@app.route('/movies/<int:movie_id>')
+def show_movie_details(movie_id):
+    """Displays details for individual movie."""
+    # use movie_id to query movie object
+    movie = Movie.query.filter(Movie.movie_id == movie_id).one()
+    
+    # query for movie's ratings, return list of tuples [(user.email, ratings.score), ...]
+    # add user_id
+    QUERY = """
+            SELECT Users.email, Users.user_id, Ratings.score
+            FROM Ratings 
+            JOIN Movies ON Movies.movie_id = Ratings.movie_id 
+            JOIN Users ON Users.user_id = Ratings.user_id 
+            WHERE Movies.movie_id = :movie_id;
+            """
+    cursor = db.session.execute(QUERY, {'movie_id': movie_id})
+    ratings = cursor.fetchall()
+    
+    # movies = Movie.query.order_by(Movie.movie_title).all()
+    return render_template("movie-details.html", movie=movie, ratings=ratings) 
+
 @app.route('/users')
 def users():
     """Show list of users."""
