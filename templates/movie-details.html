@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h2>{{ movie.movie_title }}</h2>
+    <ul>
+        <li>Release Date: {{ movie.release_date }}</li>
+        <li>IMDb Page: <a href="{{ movie.imdb_url }}">{{ movie.imdb_url }}</a></li>
+    </ul>
+    <h2>Ratings By User</h2>
+    <ul>
+        <!-- update variable names after creating tuple -->
+        {% for rating in ratings %}
+            {# username = rating[0], user_id = rating[1], score = rating[2] #}
+            {% if rating[0] is not none %}
+            <li>User Email: {{ rating[0] }} Score: {{ rating[2] }}</li>
+            {% else %}
+            <li>User Id: {{ rating[1] }} Score: {{ rating[2] }}</li>
+            {% endif%}
+        {% endfor %}
+    </ul>
+
+{% endblock %}
+        

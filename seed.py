@@ -68,7 +68,8 @@ def load_movies():
         else:
             rel_date_obj = None
 
-        imdb_url = movie_entry[3]
+        # account for || before IMBd URL
+        imdb_url = movie_entry[4]
 
         movie = Movie(movie_id=movie_id,
                       movie_title=movie_title, 
