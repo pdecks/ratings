@@ -6,7 +6,49 @@
         <li>Release Date: {{ movie.release_date }}</li>
         <li>IMDb Page: <a href="{{ movie.imdb_url }}">{{ movie.imdb_url }}</a></li>
     </ul>
+    <div>
+        {# if logged in, allow user to enter/edit rating #}
+        {% if "user_id" in session %}
+        <form action="add-rating" id="user-rating" method="POST">
+            <label>
+                Rate this movie:
+                <select name="user-rating">
+                    <option value="1">1 - AWFUL!</option>
+                    <option value="2">2 - Not into it.</option>
+                    <option value="3">3 - Meh.</option>
+                    <option value="4">4 - Cool.</option>
+                    <option value="5">5 - SO AMAZED!</option>
+                </select>
+                <input type="hidden" name="movie-id" value="{{movie.movie_id}}">
+            </label>
+            <input type="submit">
+        </form>
+        <div id="successful-update">
+        </div>
 
+    <script>
+    // event handler
+    $("#user-rating").on("submit", updateRatings);
+
+    // update database (request to server at route /add-rating)
+    function updateRatings(evt) {
+        evt.preventDefault
+        $.get("/add-rating", displaySuccess);
+    }
+
+    function displaySuccess() {
+        $("#successful-update").html("Updated successfully!");
+    }
+
+    </script>       
+
+
+
+        {% endif %}
+        {# TODO: show their current rating at top? #}
+  
+
+    </div>    
     <!-- TODO: if someone is logged in, allow them to add or edit their rating -->
     <h2>Ratings By User</h2>
     <ul>

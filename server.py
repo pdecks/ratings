@@ -45,13 +45,46 @@ def show_movie_details(movie_id):
             FROM Ratings 
             JOIN Movies ON Movies.movie_id = Ratings.movie_id 
             JOIN Users ON Users.user_id = Ratings.user_id 
-            WHERE Movies.movie_id = :movie_id;
+            WHERE Movies.movie_id = :movie_id
+            ORDER BY Users.user_id;
             """
     cursor = db.session.execute(QUERY, {'movie_id': movie_id})
     ratings = cursor.fetchall()
     
     # movies = Movie.query.order_by(Movie.movie_title).all()
     return render_template("movie-details.html", movie=movie, ratings=ratings) 
+
+@app.route('/movies/add-rating', methods=['POST'])
+def update_movie_rating():
+    # this route is only accessed by a logged-in user
+
+    # get the movie_id (hidden submit)
+    movie_id = request.form.get('movie-id')
+    # get user's rating
+    user_rating = request.form.get('value')
+    user_id = session['user_id']
+    print "this is user_id: %s" % user_id
+
+    # query Rating to see if user has already rated
+    # if rating = None, add rating to database
+    rating = Rating.query.filter(User.user_id == user_id).first()
+    print "This is rating at line 70: movie_id %s user_id %s score %s" % (rating.movie_id, rating.user_id, rating.score)
+    if rating == None:
+        # add value in ratings database
+        rating = Rating(movie_id=movie_id, user_id=user_id, score=user_rating)
+        print "This is rating: movie_id %s user_id %s score %s" % (rating.movie_id, rating.user_id, rating.score)
+        db.session.add(rating)
+        db.session.commit()
+    else: # update rating
+        QUERY = """
+        UPDATE Ratings
+        SET score = :score
+        WHERE user_id = :user_id AND movie_id = :movie_id;
+        """
+        cursor = db.session.execute(QUERY, {'user_id': user_id, 'movie_id': movie_id, 'score': user_rating})
+        db.session.commit()
+
+    return redirect("/movies/" + str(movie_id))
 
 @app.route('/users')
 def users():
@@ -72,12 +105,12 @@ def process_login():
     
     # if user = None, add user to database
     user = User.query.filter(User.email == username).first()
-    print "This is user after line 74: %s" % user
+    # print "This is user after line 74: %s" % user
     if user == None:
         age = ''
         zipcode = ''
         user = User(email=username, password=password, age=age, zipcode=zipcode)
-        print "This is user after line 79: %s" % user
+        # print "This is user after line 79: %s" % user
         db.session.add(user)
         db.session.commit()
 
