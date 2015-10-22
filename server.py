@@ -59,32 +59,39 @@ def update_movie_rating():
     # this route is only accessed by a logged-in user
 
     # get the movie_id (hidden submit)
-    movie_id = request.form.get('movie-id')
+    movie_id = int(request.form.get('movie-id'))
+    # print "This is movie_id at line 62: %s" % movie_id #ok
     # get user's rating
-    user_rating = request.form.get('value')
+    user_rating = request.form.get('user-rating')
+    # print "This is user_rating at line 65: %s" % user_rating #ok
+
     user_id = session['user_id']
-    print "this is user_id: %s" % user_id
+    # print "this is user_id at line 68: %s" % user_id #ok
 
     # query Rating to see if user has already rated
     # if rating = None, add rating to database
-    rating = Rating.query.filter(User.user_id == user_id).first()
-    print "This is rating at line 70: movie_id %s user_id %s score %s" % (rating.movie_id, rating.user_id, rating.score)
+    rating = Rating.query.filter(Rating.user_id == user_id, Rating.movie_id == movie_id).first() ### SOMETHING IS GOING WRONG HERE ... 
+    # print "rating: %s" % rating
+    
     if rating == None:
         # add value in ratings database
         rating = Rating(movie_id=movie_id, user_id=user_id, score=user_rating)
         print "This is rating: movie_id %s user_id %s score %s" % (rating.movie_id, rating.user_id, rating.score)
         db.session.add(rating)
         db.session.commit()
+        flash("Your rating has been sucessfully added!")
     else: # update rating
         QUERY = """
         UPDATE Ratings
-        SET score = :score
-        WHERE user_id = :user_id AND movie_id = :movie_id;
+        SET score=:score
+        WHERE user_id=:user_id AND movie_id=:movie_id;
         """
         cursor = db.session.execute(QUERY, {'user_id': user_id, 'movie_id': movie_id, 'score': user_rating})
         db.session.commit()
+        flash("Your rating has been sucessfully updated!")
 
     return redirect("/movies/" + str(movie_id))
+
 
 @app.route('/users')
 def users():
@@ -116,11 +123,12 @@ def process_login():
 
         # User.query.filter(User.email == username)
         user = User.query.filter(User.email == username).all()
-        user = user[0]
-        print "This is the user after line 85: %s" % user
-        print "This is password: %s" % password
-        print "This is user.password: %s" % user.password
-        # TODO: ways to get fancy: add modal window, registration page, etc.
+        # user = user[0]
+        # print "This is the user after line 85: %s" % user
+        # print "This is password: %s" % password
+        # print "This is user.password: %s" % user.password
+
+        # # TODO: ways to get fancy: add modal window, registration page, etc.
 
     # user exists, check pw
     # log in user if password matches user pw

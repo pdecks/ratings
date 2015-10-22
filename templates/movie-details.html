@@ -33,12 +33,13 @@
     // update database (request to server at route /add-rating)
     function updateRatings(evt) {
         evt.preventDefault
-        $.get("/add-rating", displaySuccess);
+        $.post("/add-rating");
+        // displaySuccess();
     }
 
-    function displaySuccess() {
-        $("#successful-update").html("Updated successfully!");
-    }
+    // function displaySuccess() {
+    //     $("#successful-update").html("Updated successfully!");
+    // }
 
     </script>       
 
