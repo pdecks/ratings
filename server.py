@@ -17,7 +17,6 @@ app.secret_key = "ABC"
 # This is horrible. Fix this so that, instead, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 
-
 @app.route('/')
 def index():
     """Homepage."""
@@ -70,14 +69,34 @@ def process_login():
     username = request.args.get('username')
     password = request.args.get('password')
     # query for username in database
-    user = User.query.filter(User.email == username).one()
-    print "this is user: %s" % user
+    
+    # if user = None, add user to database
+    user = User.query.filter(User.email == username).first()
+    print "This is user after line 74: %s" % user
+    if user == None:
+        age = ''
+        zipcode = ''
+        user = User(email=username, password=password, age=age, zipcode=zipcode)
+        print "This is user after line 79: %s" % user
+        db.session.add(user)
+        db.session.commit()
+
+        # User.query.filter(User.email == username)
+        user = User.query.filter(User.email == username).all()
+        user = user[0]
+        print "This is the user after line 85: %s" % user
+        print "This is password: %s" % password
+        print "This is user.password: %s" % user.password
+        # TODO: ways to get fancy: add modal window, registration page, etc.
+
+    # user exists, check pw
     # log in user if password matches user pw
     if user.password == password:
         # add user id to session
         session['user_id'] = user.user_id
         # create flash message 'logged in'
         flash("Login successful.")
+        print "I made it to line 99"
     else:
         # display alert for incorrect login information
         flash("Incorrect login information. Please try again.")
@@ -85,7 +104,8 @@ def process_login():
         return redirect('/login-form')  
         
     # redirect to homepage
-    return redirect('/users/<user_id>')
+    # return redirect('/users/<user_id>')
+    return redirect('/users/'+str(user.user_id))
 
 @app.route('/users/<user_id>')
 def show_user_page(user_id):
@@ -101,21 +121,10 @@ def show_user_page(user_id):
     cursor = db.session.execute(QUERY, {'user_id': user_id})
     movies = cursor.fetchall()
     user = User.query.filter(User.user_id == user_id).one()
-    # query database to return a LIST of MOVIES user rated and score for each rating
-    # user_ratings = Rating.query.filter(User.user_id == 944).all()
-    # print "This is user_ratings:"
-    # print user_ratings
-    # for rating in user_ratings:
-    #     print rating
-    # user_movies_rated = user_ratings.movie
-    # movies = user_movies_rated.all()
-    # for movie in movies:
-    #     print movie.movie_title
-    # movies=[{'movie_title': 'Batman', 'score': 5}]
+    
+    # TODO: Allow user to edit information on profile page if logged in
     
     return render_template('user.html', user=user, movies=movies)
-
-
 
 
 @app.route('/logout')

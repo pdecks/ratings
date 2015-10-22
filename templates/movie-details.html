@@ -6,8 +6,12 @@
         <li>Release Date: {{ movie.release_date }}</li>
         <li>IMDb Page: <a href="{{ movie.imdb_url }}">{{ movie.imdb_url }}</a></li>
     </ul>
+
+    <!-- TODO: if someone is logged in, allow them to add or edit their rating -->
     <h2>Ratings By User</h2>
     <ul>
+        <!-- TODO: show logged in user's rating at top -->
+        
         <!-- update variable names after creating tuple -->
         {% for rating in ratings %}
             {# username = rating[0], user_id = rating[1], score = rating[2] #}

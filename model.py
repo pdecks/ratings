@@ -1,4 +1,5 @@
 """Models and database functions for Ratings project."""
+import correlation # correlation.pearson
 
 from flask_sqlalchemy import SQLAlchemy
 

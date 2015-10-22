@@ -6,7 +6,15 @@
 
 <body>
     <navbar>
+        {% if not "user_id" in session %}
+        <a href='/login-form'>Login</a>
+        
+        {% else %}
+        {# if logged in, show profile page link #}
+        <a href="/users/{{ session['user_id'] }}">Profile</a>
         <a href='/logout'>Logout</a>
+        
+        {% endif %}
     </navbar>
     <ul>
         {% for message in get_flashed_messages() %}
