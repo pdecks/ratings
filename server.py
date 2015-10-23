@@ -24,6 +24,7 @@ def index():
     return render_template('homepage.html')
     # "<html><body>Placeholder for the homepage.</body></html>"
 
+
 @app.route('/movies')
 def movies():
     """Movies page."""
@@ -136,9 +137,11 @@ def users():
     users = User.query.all()
     return render_template("user-list.html", users=users)
 
+
 @app.route('/login-form')
 def show_login_form():
     return render_template("sign-in.html")
+
 
 @app.route('/login-process')
 def process_login():
@@ -184,6 +187,7 @@ def process_login():
     # return redirect('/users/<user_id>')
     return redirect('/users/'+str(user.user_id))
 
+
 @app.route('/users/<user_id>')
 def show_user_page(user_id):
     # user_id = session['user_id']
@@ -202,6 +206,33 @@ def show_user_page(user_id):
     # TODO: Allow user to edit information on profile page if logged in
     
     return render_template('user.html', user=user, movies=movies)
+
+
+@app.route('/update-profile', methods=['POST'])
+def update_user_profile():
+    user_id = session['user_id']
+    
+    user = User.query.filter(User.user_id == user_id).first()
+
+    # only allow user to enter an email if they don't already have one ?
+    # but this is how they log in, so it is a security breach ...
+    # if user.email == '':
+    #     email = request.post.get('email')
+
+    age = request.form.get('age')
+
+    zipcode = request.form.get('zipcode')
+
+    QUERY = """
+        UPDATE Users
+        SET age=:age, zipcode=:zipcode
+        WHERE user_id=:user_id;
+        """
+    cursor = db.session.execute(QUERY, {'user_id': user_id, 'age': age, 'zipcode': zipcode})
+    db.session.commit()
+    flash("Your profile has been sucessfully updated!")
+
+    return redirect('/users/'+str(user_id))
 
 
 @app.route('/logout')

@@ -2,14 +2,14 @@
 {% block content %}
 
     <h2>Movies</h2>
-    <ul>
-        {% for movie in movies %}
-            <li>
-                <a href="/movies/{{ movie.movie_id }}">
-                    {{ movie.movie_title }}
-                </a>    
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="CSSTableGenerator MoviesTable">
+        <table>
+            {% for movie in movies %}
+            <tr>
+                <td><a href="/movies/{{ movie.movie_id }}">{{ movie.movie_title }}</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 
 {% endblock %}

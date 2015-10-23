@@ -1,28 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
-
+    
     {% if user.email is not none %}
     <h2>User: {{ user.email }}</h2>
     {% else %}
     <h2>User: {{ user.user_id}}</h2>
     {% endif %}
+    
+
+    {# if logged in, allow user to enter/edit rating #}
+    {% if "user_id" in session %}
+    <div>
+        <form action="/update-profile" method="POST">
+            <label>Email
+                <input type="text" name="email" placeholder="{{user.email}}" disabled="true">
+            </label>
+            <label>Age
+                <input type="text" name="age" value="{{user.age}}">
+            </label>
+            <label>Zipcode
+                <input type="text" name="zipcode" value="{{user.zipcode}}">
+            </label>
+            <input type="submit">
+        </form>
+    </div>
+    {% else %}
     <ul>
         <li>Age: {{ user.age }}</li>
         <li>Zipcode: {{ user.zipcode }}</li>
     </ul>
-
-    {% if user.email is not none %}
-    <h2>Movies rated by {{ user.email }}</h2>
-    {% else %}
-    <h2>Movies rated by User {{ user.user_id }}</h2>
+    
     {% endif %}
-
-    <ul>
-        <!-- update variable names after creating tuple -->
-        {% for movie in movies %} 
-            <li>{{movie.movie_title}} {{movie.score}}</li>
-        {% endfor %}
-    </ul>
-
+    
+    {% if user.email is not none %}
+    <h3>Movies rated by {{ user.email }}</h3>
+    {% else %}
+    <h3>Movies rated by User {{ user.user_id }}</h3>
+    {% endif %}
+    <div class="CSSTableGenerator">
+        <table>
+            <!-- update variable names after creating tuple -->
+            {% if movies %}
+            <tr>
+                <td>Movie Title</td>
+                <td>User Rating</td>
+            </tr>
+            {% endif %}
+            {% for movie in movies %} 
+            <tr>
+                <td>{{movie.movie_title}}</td>
+                <td>{{movie.score}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock %}
+
 
