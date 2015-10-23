@@ -35,9 +35,34 @@ def movies():
 @app.route('/movies/<int:movie_id>')
 def show_movie_details(movie_id):
     """Displays details for individual movie."""
+
     # use movie_id to query movie object
-    movie = Movie.query.filter(Movie.movie_id == movie_id).one()
+    movie = Movie.query.get(movie_id)
     
+    user_id = session.get("user_id")
+
+    if user_id:
+        user_rating = Rating.query.filter_by(
+            movie_id=movie_id, user_id=user_id).first()
+
+    else:
+        user_rating = None
+
+    # Get average rating of movie
+
+    rating_scores = [r.score for r in movie.ratings]
+    avg_rating = float(sum(rating_scores)) / len(rating_scores)
+
+    prediction = None
+
+    # Prediction code: only predict if the user hasn't rated it.
+
+    if (not user_rating) and user_id:
+        user = User.query.get(user_id)
+        if user:
+            prediction = user.predict_rating(movie)
+
+
     # query for movie's ratings, return list of tuples [(user.email, ratings.score), ...]
     # add user_id
     QUERY = """
@@ -52,7 +77,18 @@ def show_movie_details(movie_id):
     ratings = cursor.fetchall()
     
     # movies = Movie.query.order_by(Movie.movie_title).all()
-    return render_template("movie-details.html", movie=movie, ratings=ratings) 
+    # return render_template("movie-details.html", movie=movie, ratings=ratings) 
+
+
+    return render_template(
+        "movie-details.html",
+        movie=movie,
+        user_rating=user_rating,
+        average=avg_rating,
+        prediction=prediction,
+        ratings=ratings
+        )
+
 
 @app.route('/movies/add-rating', methods=['POST'])
 def update_movie_rating():

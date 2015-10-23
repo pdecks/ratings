@@ -52,6 +52,10 @@
     </div>    
     <!-- TODO: if someone is logged in, allow them to add or edit their rating -->
     <h2>Ratings By User</h2>
+    <p> Average rating: {{ average }}</p>
+    {% if prediction %}
+        <p>We predict you will rate this movie {{ prediction }}. </p>
+    {% endif %}
     <ul>
         <!-- TODO: show logged in user's rating at top -->
         
